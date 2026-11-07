@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+<!-- La page relais de la connexion TikTok du cockpit GoodApps, publiée sur https://sleepwellapp.github.io/cockpit-relais/tiktok/
+     (dépôt sleepwellapp/cockpit-relais). TikTok n'accepte qu'une adresse de retour en https ; le cockpit n'est servi qu'en
+     http par Tailscale. Cette page renvoie donc le navigateur, avec le code et l'état tels quels, au cockpit dont l'adresse
+     voyage au début de l'état. Elle ne garde rien et n'envoie rien ailleurs ; elle ne renvoie que vers une adresse Tailscale
+     ou le Mac lui-même (la même règle que ORIGIN_RE dans cockpit/server/tiktok_api.py). -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Retour au cockpit</title>
+<body style="margin:0;padding:32px 20px;font:16px/1.45 system-ui,sans-serif;background:#0e0f11;color:#e8e8ea">
+<p id="t">Retour au cockpit…</p>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search), st = q.get('state') || '', dot = st.indexOf('.'), base = '';
+  try {
+    var b = st.slice(0, dot).replace(/-/g, '+').replace(/_/g, '/');
+    base = atob(b + '===='.slice(b.length % 4 || 4));
+  } catch (e) { base = ''; }
+  var ok = /^https?:\/\/([a-z0-9-]+(\.[a-z0-9-]+)*\.ts\.net|[a-z0-9-]+|127\.0\.0\.1|localhost)(:\d{2,5})?$/i;
+  if (dot > 0 && ok.test(base)) location.replace(base + '/api/tiktok/api/retour' + location.search);
+  else document.getElementById('t').textContent = 'Ce lien ne vient pas du cockpit : rouvre le cockpit et recommence.';
+})();
+</script>
+</body>
+</html>
